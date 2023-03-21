@@ -3,14 +3,14 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require('mongoose');
 
-const app = express();
+const app = express()
 
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs')
 
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-app.use(express.static("public"));
+app.use(express.static("public"))
 
 mongoose.connect("mongodb://0.0.0.0:27017/wikiDB", {useNewUrlParser: true})
 
@@ -56,7 +56,6 @@ app.route("/articles/:articleTitle")
 
   .get(function (req, res) {
 
-    
     Article.findOne({ title: req.params.articleTitle }).exec().then((foundArticle) => {
       if(foundArticle){
         res.send(foundArticle)
@@ -68,7 +67,34 @@ app.route("/articles/:articleTitle")
     })
   })
 
+  .put(function (req, res) {
+      Article.updateOne({title: req.params.articleTitle},
+        {title: req.query.title, content: req.query.content},
+        ).then(() => {
+          res.send("Successfully updated article")
+        }).catch((err) => {
+          res.send(err)
+        })
+    })
+  
+  .patch(function (req, res) {
+      Article.updateOne({title: req.params.articleTitle},
+        {$set: req.body}
+        ).then(()=> {
+          res.send("Successfully updated article")
+        }).catch((err) => {
+          res.send(err)
+        })
+    })
+
+   .delete(function (req, res) {
+      Article.deleteOne({title: req.params.articleTitle}).then(() => {
+        res.send("Successfully deleted article")
+      }).catch((err) => {
+        res.send(err)
+      })
+     }) 
 
 app.listen(3000, function() {
-  console.log("Server started on port 3000");
+  console.log("Server started on port 3000")
 });
