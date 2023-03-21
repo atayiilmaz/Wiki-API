@@ -16,8 +16,12 @@ const articleSchema = new mongoose.Schema({
 
 const Article = mongoose.model("Article", articleSchema)
 
-app.get("/", function (req,res) {
-    res.send("Initializing the project")
+app.get("/articles", function (req,res) {
+    Article.find().then((foundArticles) => {
+      res.send(foundArticles)
+    }).catch((err) => {
+      res.send(err)
+    })
   })
 
 app.use(bodyParser.urlencoded({
